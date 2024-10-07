@@ -11,16 +11,26 @@ import fs from 'fs'
 // Ruta de la base de datos
 const dbPath = path.join(app.getPath('userData'), 'database.sqlite');
 const isDbExists = fs.existsSync(dbPath);
-const db = new Database.Database(dbPath);
+
+console.log(`---------------------- PathDB: ${dbPath} -------------------------`)
 
 // Si no existe una base de datos
 if (!isDbExists) {
   console.log("********** [INFO] db doesn't exist **********")
+  const db = new Database.Database(dbPath);
   // Ruta y ejecución de la querie schema
   const schemaPath = path.join('src', 'queries', 'schema.sqlite');
   const schemaQuerie = fs.readFileSync(schemaPath, 'utf8');
+  console.log(`------------  ${schemaQuerie}  ---------------`)
   db.exec(schemaQuerie);
   console.log("********** [INFO] db created **********")
+  db.close((err) => {
+    if (err) {
+      console.error("Error closing the database:", err);
+    } else {
+      console.log("Database connection closed.");
+    }
+  });
 } else {
   console.log("********** [INFO] db exists **********")
 }
@@ -35,6 +45,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    autoHideMenuBar: true,
     webPreferences: {
 
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -48,7 +59,9 @@ async function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    if (!process.env.IS_TEST) {
+      //win.webContents.openDevTools()
+    }
   } else {
     createProtocol('app')
     // Load the index.html when not in development

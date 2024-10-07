@@ -1,30 +1,40 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div id="route-view-container">
+    <router-view/>
+  </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script setup>
+import { onBeforeMount } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
-nav {
-  padding: 30px;
-}
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+const router = useRouter();
+const store = useStore();
 
-nav a.router-link-exact-active {
-  color: #42b983;
+onBeforeMount(() => {
+  const isAuthenticated = store.state.isAuthenticated;
+  console.log(`App.vue: isAuthenticated -> ${isAuthenticated}`)
+  if (isAuthenticated) {
+    console.log(`App.vue: yendo a home`)
+    router.push('/login');
+  } else {
+    router.push('/home');
+  }
+});
+</script>
+
+<style scoped>
+#route-view-container {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100vh;
+  font-family: 'Arial', sans-serif;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
